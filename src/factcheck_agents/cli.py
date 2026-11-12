@@ -1,4 +1,4 @@
-"""Command line: ``dossier run``, ``dossier eval``, ``dossier trace``."""
+"""Command line: ``factcheck run``, ``factcheck eval``, ``factcheck trace``."""
 
 from __future__ import annotations
 
@@ -12,13 +12,13 @@ from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 
-from dossier import tracing
-from dossier.config import Settings
-from dossier.evaluation import run_eval
-from dossier.llm.base import LLM
-from dossier.orchestrator import ResearchTeam
-from dossier.render import to_markdown
-from dossier.tracing import Tracer
+from factcheck_agents import tracing
+from factcheck_agents.config import Settings
+from factcheck_agents.evaluation import run_eval
+from factcheck_agents.llm.base import LLM
+from factcheck_agents.orchestrator import ResearchTeam
+from factcheck_agents.render import to_markdown
+from factcheck_agents.tracing import Tracer
 
 
 def load_dotenv(path: Path = Path(".env")) -> None:
@@ -33,10 +33,10 @@ def load_dotenv(path: Path = Path(".env")) -> None:
 
 def _make_llm(fake: bool, settings: Settings) -> LLM:
     if fake:
-        from dossier.llm.fake import FakeLLM
+        from factcheck_agents.llm.fake import FakeLLM
 
         return FakeLLM()
-    from dossier.llm.anthropic_llm import AnthropicLLM
+    from factcheck_agents.llm.anthropic_llm import AnthropicLLM
 
     return AnthropicLLM(use_fallbacks=settings.use_fallbacks)
 
@@ -77,7 +77,7 @@ async def _cmd_eval(args: argparse.Namespace, settings: Settings) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="dossier", description=__doc__)
+    parser = argparse.ArgumentParser(prog="factcheck", description=__doc__)
     parser.add_argument("--config", type=Path, help="TOML file overriding default settings")
     sub = parser.add_subparsers(dest="command", required=True)
 

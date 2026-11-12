@@ -1,4 +1,4 @@
-# dossier
+# factcheck-agents
 
 **A multi-agent research team built directly on the Claude API, with no agent framework.**
 A planner splits a question, researchers investigate the parts in parallel with web search, a
@@ -6,9 +6,10 @@ critic fact-checks every claim against its quoted source, and a writer turns wha
 a cited report. Plain code then checks every citation before you see it.
 
 It ships with an eval that compares the team against a single agent on the same model and tools.
-A team is only worth its complexity if it does measurably better per dollar.
+A team is only worth its complexity if it does measurably better per dollar, and in the first
+measured run [it didn't yet](#results-5-questions-2026-11-12). The README says why and what to try next.
 
-[![CI](https://github.com/dojedaro/dossier/actions/workflows/ci.yml/badge.svg)](https://github.com/dojedaro/dossier/actions/workflows/ci.yml)
+[![CI](https://github.com/dojedaro/factcheck-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/dojedaro/factcheck-agents/actions/workflows/ci.yml)
 
 ```mermaid
 flowchart LR
@@ -37,7 +38,7 @@ flowchart LR
 | **The writer's citations are checked too.** Citations to ids that don't exist or were rejected are stripped and counted. | Every number in the report traces back to a quote and a URL. |
 | **Failure isolation.** Each researcher has a timeout; one failure costs one sub-question, not the run. | `asyncio.TaskGroup` gives structured concurrency; per-task error capture keeps one failure from cancelling the others. |
 | **A budget with a reserve.** Research stops when spending reaches `budget - reserve`; the critic and writer finish on the reserve. | A run that runs out of money still ends with a report, not an exception. |
-| **Traces.** Every agent step is a span, nested correctly across parallel tasks via `contextvars`. | `dossier trace` shows who did what, how long it took and what it cost. |
+| **Traces.** Every agent step is a span, nested correctly across parallel tasks via `contextvars`. | `factcheck trace` shows who did what, how long it took and what it cost. |
 | **Refusal fallbacks.** On a safety-classifier decline the API retries on a fallback model in the same call (`fallbacks="default"`). The trace records which model actually answered. | One false-positive refusal doesn't fail a researcher. |
 | **A fake model for tests.** It implements the same two-method interface as the real client. | The whole pipeline runs in CI with no API key and costs $0. |
 
@@ -47,33 +48,36 @@ flowchart LR
 pip install -e ".[dev]"
 
 # Offline: full pipeline against the fake model, $0
-dossier run "Should a mid-size bank adopt passkeys?" --fake
+factcheck run "Should a mid-size bank adopt passkeys?" --fake
 
-# Real run: needs ANTHROPIC_API_KEY (or `ant auth login`)
-dossier run "Should a mid-size bank adopt passkeys?"
-dossier run "..." --baseline                      # the single-agent control
-dossier --config configs/quick.toml run "..."     # fewer sub-questions, no follow-up round
+# Real run: put ANTHROPIC_API_KEY=... in a .env file (gitignored), or run `ant auth login`
+factcheck run "Should a mid-size bank adopt passkeys?"
+factcheck run "..." --baseline                      # the single-agent control
+factcheck --config configs/quick.toml run "..."     # fewer sub-questions, no follow-up round
 
-dossier trace runs/<run>/trace.jsonl              # where the time and money went
+factcheck trace runs/<run>/trace.jsonl              # where the time and money went
 ```
 
 Each run writes `report.md`, `metrics.json` and `trace.jsonl` to `runs/<timestamp>-<slug>/`.
 
 ```
-team question='Should a mid-size bank adopt passkeys?'                    41.8s
-  llm:planner                                                              6.1s   $0.0310
-  research_round round=1                                                  27.4s
-    researcher sub_question='What phishing resistance do passkeys ...'    24.9s
-      llm:researcher sub_question='What phishing resistance ...'          24.9s   $0.2900
-    ...
-  llm:critic items=14                                                      4.2s   $0.0400
-  llm:writer items=12                                                      4.1s   $0.0700
+team question='What are the security trade-offs between passkeys and S  105.61s
+  llm:planner                                                               6.26s   $0.0105
+  research_round round=1                                                   60.33s
+    researcher sub_question='What attacks are SMS one-time codes vulnerabl   60.33s
+      llm:researcher sub_question='What attacks are SMS one-time codes vulne   60.33s   $0.5149
+    researcher sub_question='What are the security risks, limitations and    45.43s
+      llm:researcher sub_question='What are the security risks, limitations    45.43s   $0.3352
+  llm:critic items=12                                                      14.14s   $0.0465
+  llm:writer items=12                                                      24.87s   $0.0614
+
+total cost $0.9684 across 5 model calls
 ```
-<sub>Layout of `dossier trace` output. Numbers are illustrative, not from a measured run.</sub>
+<sub>A real run (`configs/quick.toml`), before prompt caching was added. The two researchers ran in parallel: the research round took as long as the slower one.</sub>
 
 ## Does the team beat one agent?
 
-`dossier eval` runs the team and the single-agent baseline on `evals/questions.jsonl`, using the
+`factcheck eval` runs the team and the single-agent baseline on `evals/questions.jsonl`, using the
 same model, the same web search tool and a matching search allowance. It then reports two kinds
 of evidence:
 
@@ -85,12 +89,49 @@ of evidence:
   bias, the most common failure of LLM judges. The fake judge in the test suite always prefers
   position A, and a test checks that the swap turns every one of its verdicts into a tie.
 
-**Results: not run yet.** A full run of 8 questions costs roughly $25-40 on Claude Opus 5.5.
-Results will go here when they exist, including any where the baseline wins.
+### Results (5 questions, 2026-11-12)
+
+Run on `configs/quick.toml` to fit a small budget: the team got 2 sub-questions and **no
+follow-up round**, against a single agent with the same total search allowance (6 searches).
+All agents used Claude Opus 5.5. The reports, judge reasoning and metrics are in
+[`evals/results/2026-11-12-quick/`](evals/results/2026-11-12-quick/).
+
+| | Team | Single agent |
+|---|---|---|
+| Judge wins (must win in both orders) | 2 | **3** |
+| Mean cost per question | $0.90 | **$0.63** |
+| Mean wall time | 98 s | **83 s** |
+| Findings citing a URL no search returned | 0% | 0% |
+| Findings the critic rejected | 3% | (no critic) |
+| Citations to missing or rejected evidence | 0 | 0 |
+
+**The single agent won this round**, and the judge's reasoning shows why:
+
+- **The team lost on coverage, not accuracy.** In every loss the judge said the team's report
+  was the *more faithful* one, but that it left out central topics: SIM swapping and account
+  recovery for passkeys, the 10^25 FLOP systemic-risk threshold for the EU AI Act. With only two
+  sub-questions and no follow-up round, the planner's split decided what got researched, and
+  nothing caught the gaps.
+- **The team won where faithfulness decided it.** On sodium-ion batteries and four-day weeks,
+  the judge preferred the team for tying claims to quotes and flagging partial support.
+- **Neither side fabricated sources.** Both had 0% findings citing an unsearched URL. On current
+  models, the bigger quality lever is coverage, not catching made-up citations.
+
+What this suggests trying next, each measurable with the same eval:
+
+1. **Turn the follow-up round back on.** The critic already lists coverage gaps; in these runs
+   no budget was set aside to research them.
+2. **Ask the planner for coverage explicitly**, for example by listing the angles a reader would
+   expect before splitting.
+3. **Re-measure cost with prompt caching** (added after this eval). On a single-agent re-run of
+   the same question, caching cut cost from $0.51 to $0.34.
+
+A 5-question eval is small, and a 2-3 split is not statistically significant. The point of the
+harness is that each of these changes can now be tested against a number instead of a hunch.
 
 ## Configuration
 
-Defaults are in `src/dossier/config.py`, and any TOML file can override them:
+Defaults are in `src/factcheck_agents/config.py`, and any TOML file can override them:
 
 ```toml
 # configs/cheap-workers.toml: researchers do most of the reading, so they dominate cost
@@ -105,7 +146,7 @@ effort level and token limit. Run the eval before and after a change to see what
 ## Layout
 
 ```
-src/dossier/
+src/factcheck_agents/
   orchestrator.py    the team's control flow, plus the baseline
   agents/            planner, researcher, critic, writer, baseline: one prompt + one call each
   llm/               the model interface; Claude client; deterministic fake
@@ -113,7 +154,7 @@ src/dossier/
   schemas.py         typed contracts between agents
   budget.py  pricing.py  tracing.py
   evaluation.py      team vs. baseline, swapped-position judge
-tests/               37 tests; the real client is tested against a stubbed SDK
+tests/               38 tests; the real client is tested against a stubbed SDK
 ```
 
 ## Limitations

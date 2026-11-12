@@ -19,9 +19,9 @@ from typing import Generic, Protocol, TypeVar
 
 from pydantic import BaseModel
 
-from dossier.config import ModelSpec
-from dossier.pricing import TokenUsage
-from dossier.schemas import Source
+from factcheck_agents.config import ModelSpec
+from factcheck_agents.pricing import TokenUsage
+from factcheck_agents.schemas import Source
 
 T = TypeVar("T", bound=BaseModel)
 

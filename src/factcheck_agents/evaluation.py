@@ -17,14 +17,14 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Literal
 
-from dossier.agents.base import AgentContext, tag
-from dossier.budget import Budget
-from dossier.config import Settings
-from dossier.llm.base import LLM
-from dossier.orchestrator import ResearchTeam
-from dossier.render import to_markdown
-from dossier.schemas import Judgment, RunMetrics, RunResult
-from dossier.tracing import Tracer
+from factcheck_agents.agents.base import AgentContext, tag
+from factcheck_agents.budget import Budget
+from factcheck_agents.config import Settings
+from factcheck_agents.llm.base import LLM
+from factcheck_agents.orchestrator import ResearchTeam
+from factcheck_agents.render import to_markdown
+from factcheck_agents.schemas import Judgment, RunMetrics, RunResult
+from factcheck_agents.tracing import Tracer
 
 JUDGE_SYSTEM = """\
 You compare two research reports that answer the same question. Each report lists its \

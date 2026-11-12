@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from dossier.agents.base import AgentContext, tag
-from dossier.schemas import EvidenceItem, Report
+from factcheck_agents.agents.base import AgentContext, tag
+from factcheck_agents.schemas import EvidenceItem, Report
 
 SYSTEM = """\
 You write the team's final report from evidence that has already been fact-checked.

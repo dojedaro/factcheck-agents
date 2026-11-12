@@ -5,11 +5,11 @@ import time
 
 import pytest
 
-from dossier.config import Settings
-from dossier.llm.fake import FakeLLM
-from dossier.orchestrator import ResearchTeam
-from dossier.render import to_markdown
-from dossier.tracing import Tracer
+from factcheck_agents.config import Settings
+from factcheck_agents.llm.fake import FakeLLM
+from factcheck_agents.orchestrator import ResearchTeam
+from factcheck_agents.render import to_markdown
+from factcheck_agents.tracing import Tracer
 
 Q = "Should a mid-size bank adopt passkeys for retail customers?"
 

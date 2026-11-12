@@ -2,7 +2,7 @@
 
 The current span lives in a ``ContextVar``, and asyncio copies the context into each task,
 so a researcher's LLM call nests under that researcher even while four of them run at once.
-Traces are written as JSON Lines and rendered as a tree by ``dossier trace``.
+Traces are written as JSON Lines and rendered as a tree by ``factcheck trace``.
 """
 
 from __future__ import annotations
@@ -17,7 +17,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
-from dossier.pricing import TokenUsage
+from factcheck_agents.pricing import TokenUsage
 
 
 @dataclass(slots=True)
@@ -43,7 +43,7 @@ class Span:
         return data
 
 
-_current: ContextVar[Span | None] = ContextVar("dossier_current_span", default=None)
+_current: ContextVar[Span | None] = ContextVar("factcheck_current_span", default=None)
 
 
 class Tracer:

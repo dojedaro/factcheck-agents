@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
-from dossier.agents.base import AgentContext, tag
-from dossier.schemas import Critique, EvidenceItem
+from factcheck_agents.agents.base import AgentContext, tag
+from factcheck_agents.schemas import Critique, EvidenceItem
 
 SYSTEM = """\
 You are the team's fact-checker. You did not do the research, and your job is to catch \

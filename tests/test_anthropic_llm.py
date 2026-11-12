@@ -8,10 +8,10 @@ from typing import Any
 import pytest
 from anthropic.types.beta import BetaMessage
 
-from dossier.config import ModelSpec
-from dossier.llm.anthropic_llm import FALLBACK_BETA, AnthropicLLM
-from dossier.llm.base import LLMError, RefusalError
-from dossier.schemas import ResearchNotes
+from factcheck_agents.config import ModelSpec
+from factcheck_agents.llm.anthropic_llm import FALLBACK_BETA, AnthropicLLM
+from factcheck_agents.llm.base import LLMError, RefusalError
+from factcheck_agents.schemas import ResearchNotes
 
 SPEC = ModelSpec()
 VALID_NOTES = {

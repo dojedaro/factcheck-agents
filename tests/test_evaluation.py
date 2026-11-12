@@ -1,9 +1,9 @@
 import pytest
 
-from dossier.config import Settings
-from dossier.evaluation import run_eval, verdict_from_swapped
-from dossier.llm.fake import FakeLLM
-from dossier.schemas import Judgment
+from factcheck_agents.config import Settings
+from factcheck_agents.evaluation import run_eval, verdict_from_swapped
+from factcheck_agents.llm.fake import FakeLLM
+from factcheck_agents.schemas import Judgment
 
 
 def j(winner: str) -> Judgment:
@@ -34,7 +34,7 @@ async def test_eval_writes_artifacts_and_cancels_position_bias(tmp_path):
 
 
 def test_dotenv_loads_keys_without_overriding_real_env(tmp_path, monkeypatch):
-    from dossier.cli import load_dotenv
+    from factcheck_agents.cli import load_dotenv
 
     env = tmp_path / ".env"
     env.write_text('# comment\nDOSSIER_A="from file"\nDOSSIER_B=from file\n', encoding="utf-8")

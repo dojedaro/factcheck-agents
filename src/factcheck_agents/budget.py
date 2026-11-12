@@ -3,7 +3,7 @@
 Agents run concurrently, so the check-then-spend is not atomic: several researchers can pass
 the check at once and the run can overshoot by up to one call per parallel agent. That's an
 accepted trade-off (a lock around the API call would serialize the team); ``finish_reserve_usd``
-in :class:`~dossier.config.Settings` absorbs the overshoot.
+in :class:`~factcheck_agents.config.Settings` absorbs the overshoot.
 """
 
 from __future__ import annotations

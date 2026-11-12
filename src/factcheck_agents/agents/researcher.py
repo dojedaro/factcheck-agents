@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from dossier.agents.base import AgentContext, tag
-from dossier.schemas import ResearchNotes, Source
+from factcheck_agents.agents.base import AgentContext, tag
+from factcheck_agents.schemas import ResearchNotes, Source
 
 SYSTEM = """\
 You are a researcher on a team answering a larger question. You own one sub-question. \

@@ -1,5 +1,5 @@
-from dossier.grounding import cited_ids, ground_findings, normalize_url, strip_invalid_citations
-from dossier.schemas import Finding, Report, ReportSection, Source
+from factcheck_agents.grounding import cited_ids, ground_findings, normalize_url, strip_invalid_citations
+from factcheck_agents.schemas import Finding, Report, ReportSection, Source
 
 
 def ids(prefix: str = "F"):

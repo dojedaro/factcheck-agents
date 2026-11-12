@@ -35,5 +35,5 @@ jobs:
 
       - name: Smoke test the CLI
         run: |
-          dossier run "Is the CLI wired up?" --fake --out /tmp/runs > /dev/null
-          dossier eval --fake --limit 2 --out /tmp/runs
+          factcheck run "Is the CLI wired up?" --fake --out /tmp/runs > /dev/null
+          factcheck eval --fake --limit 2 --out /tmp/runs

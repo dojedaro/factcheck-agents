@@ -1,7 +1,7 @@
 import pytest
 
-from dossier.budget import Budget, BudgetExceededError
-from dossier.pricing import TokenUsage, cost_usd
+from factcheck_agents.budget import Budget, BudgetExceededError
+from factcheck_agents.pricing import TokenUsage, cost_usd
 
 
 def test_cost_matches_published_rates():

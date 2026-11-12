@@ -17,7 +17,7 @@ import itertools
 import time
 from collections.abc import Sequence
 
-from dossier.agents import (
+from factcheck_agents.agents import (
     AgentContext,
     Baseline,
     Critic,
@@ -27,12 +27,12 @@ from dossier.agents import (
     Writer,
     apply_verdicts,
 )
-from dossier.budget import Budget, BudgetExceededError
-from dossier.config import Settings
-from dossier.grounding import cited_ids, ground_findings, strip_invalid_citations
-from dossier.llm.base import LLM
-from dossier.schemas import EvidenceItem, Finding, Report, RunMetrics, RunResult, Source
-from dossier.tracing import Tracer
+from factcheck_agents.budget import Budget, BudgetExceededError
+from factcheck_agents.config import Settings
+from factcheck_agents.grounding import cited_ids, ground_findings, strip_invalid_citations
+from factcheck_agents.llm.base import LLM
+from factcheck_agents.schemas import EvidenceItem, Finding, Report, RunMetrics, RunResult, Source
+from factcheck_agents.tracing import Tracer
 
 
 class ResearchTeam:

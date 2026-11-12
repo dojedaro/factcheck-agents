@@ -1,6 +1,6 @@
 """A deterministic stand-in for Claude, for tests, CI and ``--fake`` demos.
 
-It implements the same two methods as :class:`~dossier.llm.anthropic_llm.AnthropicLLM` and
+It implements the same two methods as :class:`~factcheck_agents.llm.anthropic_llm.AnthropicLLM` and
 reads the same prompts, so the orchestrator, grounding checks and metrics run for real.
 Knobs inject the failures the system is supposed to survive.
 """
@@ -13,10 +13,10 @@ import re
 from dataclasses import dataclass, field
 from typing import Any, cast
 
-from dossier.config import ModelSpec
-from dossier.llm.base import Completion, LLMError, T
-from dossier.pricing import TokenUsage
-from dossier.schemas import (
+from factcheck_agents.config import ModelSpec
+from factcheck_agents.llm.base import Completion, LLMError, T
+from factcheck_agents.pricing import TokenUsage
+from factcheck_agents.schemas import (
     BaselineOutput,
     ClaimVerdict,
     Critique,

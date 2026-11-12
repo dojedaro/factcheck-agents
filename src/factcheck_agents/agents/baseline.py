@@ -6,8 +6,8 @@ The baseline gets the same deterministic grounding checks as the team, but no cr
 
 from __future__ import annotations
 
-from dossier.agents.base import AgentContext, tag
-from dossier.schemas import BaselineOutput, Source
+from factcheck_agents.agents.base import AgentContext, tag
+from factcheck_agents.schemas import BaselineOutput, Source
 
 SYSTEM = """\
 You are a research analyst. Answer the question with web_search, then call `submit` \

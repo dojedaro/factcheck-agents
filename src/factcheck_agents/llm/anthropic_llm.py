@@ -25,10 +25,10 @@ from anthropic import AsyncAnthropic, transform_schema
 from anthropic.types.beta import BetaMessage, BetaMessageParam, BetaToolResultBlockParam
 from pydantic import ValidationError
 
-from dossier.config import ModelSpec
-from dossier.llm.base import Completion, LLMError, RefusalError, T, TruncatedError
-from dossier.pricing import TokenUsage
-from dossier.schemas import Source
+from factcheck_agents.config import ModelSpec
+from factcheck_agents.llm.base import Completion, LLMError, RefusalError, T, TruncatedError
+from factcheck_agents.pricing import TokenUsage
+from factcheck_agents.schemas import Source
 
 FALLBACK_BETA = "server-side-fallback-2026-07-01"
 _FALLBACK_MODELS = {"claude-opus-5-5", "claude-opus-5", "claude-sonnet-5-5", "claude-fable-5-2"}

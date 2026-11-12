@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dossier.schemas import RunResult
+from factcheck_agents.schemas import RunResult
 
 
 def to_markdown(result: RunResult) -> str:

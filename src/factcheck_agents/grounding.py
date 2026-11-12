@@ -15,7 +15,7 @@ import re
 from collections.abc import Iterable, Iterator
 from urllib.parse import urlsplit, urlunsplit
 
-from dossier.schemas import EvidenceItem, Finding, Report, ReportSection, Source
+from factcheck_agents.schemas import EvidenceItem, Finding, Report, ReportSection, Source
 
 CITATION = re.compile(r"\[(F\d+)\]")
 _MARKER_WITH_SPACE = re.compile(r"(\s?)\[(F\d+)\]")

@@ -11,11 +11,11 @@ from dataclasses import dataclass
 from typing import Any
 from xml.sax.saxutils import escape
 
-from dossier.budget import Budget
-from dossier.config import ModelSpec, Role, Settings
-from dossier.llm.base import LLM, Completion, T
-from dossier.pricing import cost_usd, is_priced
-from dossier.tracing import Tracer
+from factcheck_agents.budget import Budget
+from factcheck_agents.config import ModelSpec, Role, Settings
+from factcheck_agents.llm.base import LLM, Completion, T
+from factcheck_agents.pricing import cost_usd, is_priced
+from factcheck_agents.tracing import Tracer
 
 # Roles that must stop early to leave money for the critic and writer to finish the run.
 _RESERVE_GUARDED: frozenset[Role] = frozenset({"planner", "researcher"})

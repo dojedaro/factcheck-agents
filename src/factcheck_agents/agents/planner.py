@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dossier.agents.base import AgentContext, tag
-from dossier.schemas import Plan
+from factcheck_agents.agents.base import AgentContext, tag
+from factcheck_agents.schemas import Plan
 
 SYSTEM = """\
 You are the lead analyst of a small research team. You split a research question into \
