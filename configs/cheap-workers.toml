@@ -1,0 +1,9 @@
+# Same team, cheaper researchers. Researchers do most of the reading, so they dominate cost;
+# planning, fact-checking and writing stay on the strongest model.
+# Run the eval before and after to see what the saving costs in quality.
+budget_usd = 2.00
+finish_reserve_usd = 0.50
+
+[models.researcher]
+model = "claude-sonnet-5-5"
+effort = "medium"

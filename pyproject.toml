@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dossier"
+version = "0.1.0"
+description = "A multi-agent research team on the raw Claude API: planner, parallel researchers, critic and writer, with grounded citations, budgets and traces."
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=2.8,<3",
+    "pydantic>=2.10,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==9.2.0",
+    "pytest-asyncio==1.4.1.post1",
+    "ruff==0.17.4",
+    "mypy==2.4.1",
+]
+
+[project.scripts]
+dossier = "dossier.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+dossier = ["py.typed"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "BLE", "SIM", "RUF", "ASYNC"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+packages = ["dossier"]
+mypy_path = "src"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"

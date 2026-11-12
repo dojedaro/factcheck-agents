@@ -1,0 +1,6 @@
+# Fast, low-cost settings for trying the tool out.
+max_sub_questions = 2
+max_searches_per_researcher = 3
+max_follow_up_rounds = 0
+budget_usd = 1.50
+finish_reserve_usd = 0.40
