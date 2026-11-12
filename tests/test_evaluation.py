@@ -31,3 +31,19 @@ async def test_eval_writes_artifacts_and_cancels_position_bias(tmp_path):
     assert (tmp_path / "results.jsonl").read_text().count("\n") == 2
     assert (tmp_path / "q01-team.md").exists()
     assert (tmp_path / "q02-baseline.trace.jsonl").exists()
+
+
+def test_dotenv_loads_keys_without_overriding_real_env(tmp_path, monkeypatch):
+    from dossier.cli import load_dotenv
+
+    env = tmp_path / ".env"
+    env.write_text('# comment\nDOSSIER_A="from file"\nDOSSIER_B=from file\n', encoding="utf-8")
+    monkeypatch.delenv("DOSSIER_A", raising=False)
+    monkeypatch.setenv("DOSSIER_B", "real")
+
+    load_dotenv(env)
+
+    import os
+
+    assert os.environ["DOSSIER_A"] == "from file"
+    assert os.environ["DOSSIER_B"] == "real"

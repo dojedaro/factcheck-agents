@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import re
 import sys
 from dataclasses import asdict
@@ -18,6 +19,16 @@ from dossier.llm.base import LLM
 from dossier.orchestrator import ResearchTeam
 from dossier.render import to_markdown
 from dossier.tracing import Tracer
+
+
+def load_dotenv(path: Path = Path(".env")) -> None:
+    """Load KEY=value lines from a local .env file. Real environment variables win."""
+    if not path.is_file():
+        return
+    for line in path.read_text(encoding="utf-8-sig").splitlines():
+        key, sep, value = line.strip().partition("=")
+        if sep and key and not key.startswith("#"):
+            os.environ.setdefault(key.strip(), value.strip().strip("'\""))
 
 
 def _make_llm(fake: bool, settings: Settings) -> LLM:
@@ -90,6 +101,7 @@ def main(argv: list[str] | None = None) -> int:
         print(tracing.render_tree(tracing.load(args.path)))
         return 0
 
+    load_dotenv()
     settings = Settings.load(args.config)
     handler = _cmd_run if args.command == "run" else _cmd_eval
     return asyncio.run(handler(args, settings))
