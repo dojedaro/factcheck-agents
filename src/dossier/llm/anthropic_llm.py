@@ -12,6 +12,8 @@ Design notes, so the choices are defensible:
   ``tool_choice`` is rejected on current models, so the prompt asks for the call and the loop
   nudges once if the model stops without making it.
 * Thinking is left at the model default (adaptive); ``effort`` is the depth control.
+* The research loop is append-only (assistant turns are replayed unchanged, nudges are new
+  turns), which keeps both the prompt cache and replayed thinking blocks valid.
 * Retries for 429/5xx/connection errors are the SDK's own (exponential backoff).
 """
 
@@ -80,7 +82,14 @@ class AnthropicLLM:
 
         for _ in range(max_turns):
             resp = await self._client.beta.messages.create(
-                **self._request_options(spec), system=system, messages=messages, tools=tools
+                **self._request_options(spec),
+                system=system,
+                messages=messages,
+                tools=tools,
+                # Each turn resends the whole conversation, search results included. Automatic
+                # caching moves the breakpoint forward every turn, so earlier turns bill as cache
+                # reads (0.05x input on Opus 5.5) instead of full-price input.
+                cache_control={"type": "ephemeral"},
             )
             usage += _usage(resp)
             request_ids.append(_request_id(resp))

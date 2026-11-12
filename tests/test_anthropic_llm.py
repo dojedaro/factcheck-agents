@@ -94,6 +94,7 @@ async def test_collects_sources_and_returns_validated_submission():
     req = stub.requests[0]
     assert req["fallbacks"] == "default" and req["betas"] == [FALLBACK_BETA]
     assert req["output_config"] == {"effort": SPEC.effort}
+    assert req["cache_control"] == {"type": "ephemeral"}  # the loop resends history every turn
     assert {t["name"] for t in req["tools"]} == {"web_search", "submit"}
     assert next(t for t in req["tools"] if t["name"] == "submit")["strict"] is True
 
