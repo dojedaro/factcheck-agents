@@ -40,7 +40,7 @@ flowchart LR
 | **Evidence ids come from code.** A model never makes up `F7`. | A model can't invent a citation that looks valid. |
 | **Grounding is checked in code.** A finding must cite a URL that one of *that researcher's own searches* returned (`grounding.py`). | This catches the most common multi-agent fabrication, a real-looking URL from memory, without trusting any model. |
 | **The critic isn't the researcher.** It judges each claim *only* against its quote. | A model checking its own work tends to approve it. Unsupported claims are dropped before writing. |
-| **The writer's citations are checked too.** Citations to ids that don't exist or were rejected are stripped and counted. | Every number in the report traces back to a quote and a URL. |
+| **The writer's citations are checked too.** Citations to ids that don't exist or were rejected are stripped and counted. | Every citation in the report points to evidence that passed the URL check and the critic. (Whether each sentence says only what its cited quote supports is not re-checked; see Limitations.) |
 | **Failure isolation.** Each researcher has a timeout; one failure costs one sub-question, not the run. | `asyncio.TaskGroup` gives structured concurrency; per-task error capture keeps one failure from cancelling the others. |
 | **A budget with a reserve.** Research stops when spending reaches `budget - reserve`; the critic and writer finish on the reserve. | A run that runs out of money still ends with a report, not an exception. |
 | **Traces.** Every agent step is a span, nested correctly across parallel tasks via `contextvars`. | `factcheck trace` shows who did what, how long it took and what it cost. |
@@ -104,7 +104,7 @@ All agents used Claude Opus 5.5. The reports, judge reasoning and metrics are in
 | | Team | Single agent |
 |---|---|---|
 | Judge wins (must win in both orders) | 2 | **3** |
-| Mean cost per question | $0.90 | **$0.63** |
+| Mean cost per question (before prompt caching) | $0.90 | **$0.63** |
 | Mean wall time | 98 s | **83 s** |
 | Findings citing a URL no search returned | 0% | 0% |
 | Findings the critic rejected | 3% | (no critic) |
@@ -131,7 +131,7 @@ What this suggests trying next, each measurable with the same eval:
 3. **Re-measure cost with prompt caching** (added after this eval). On a single-agent re-run of
    the same question, caching cut cost from $0.51 to $0.34.
 
-A 5-question eval is small, and a 2-3 split is not statistically significant. The point of the
+A 5-question eval is small, and a 2-3 split is not statistically significant. The judge is the same model as both contestants (Opus 5.5), so self-preference can't be ruled out; a judge from another model family is the next control to add. The point of the
 harness is that each of these changes can now be tested against a number instead of a hunch.
 
 ## Replay viewer
@@ -187,6 +187,10 @@ tests/               43 tests; the real client is tested against a stubbed SDK
 ```
 
 ## Limitations
+
+- **Report sentences aren't checked against their citations.** Code verifies that every cited URL came
+  from a real search and every citation id points to accepted evidence; it does not check that each
+  sentence says only what its quote supports, or flag sentences with no citation.
 
 - **The critic checks claims against quotes, not quotes against pages.** Web search returns
   page content encrypted, so code can't confirm that a quote appears on the page. The URL
