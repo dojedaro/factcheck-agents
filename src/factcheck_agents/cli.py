@@ -1,4 +1,4 @@
-"""Command line: ``factcheck run``, ``factcheck eval``, ``factcheck trace``."""
+"""Command line: ``factcheck run``, ``factcheck eval``, ``factcheck trace``, ``factcheck site``."""
 
 from __future__ import annotations
 
@@ -18,6 +18,7 @@ from factcheck_agents.evaluation import run_eval
 from factcheck_agents.llm.base import LLM
 from factcheck_agents.orchestrator import ResearchTeam
 from factcheck_agents.render import to_markdown
+from factcheck_agents.site_data import write_bundle
 from factcheck_agents.tracing import Tracer
 
 
@@ -96,9 +97,17 @@ def main(argv: list[str] | None = None) -> int:
     tr = sub.add_parser("trace", help="print a trace file as a tree")
     tr.add_argument("path", type=Path)
 
+    site = sub.add_parser("site", help="bundle saved runs and evals for the static replay viewer")
+    site.add_argument("--run", type=Path, action="append", default=[], help="a run folder (repeatable)")
+    site.add_argument("--eval", type=Path, action="append", default=[], help="an eval folder (repeatable)")
+    site.add_argument("--out", type=Path, default=Path("site/data/bundle.json"))
+
     args = parser.parse_args(argv)
     if args.command == "trace":
         print(tracing.render_tree(tracing.load(args.path)))
+        return 0
+    if args.command == "site":
+        print(f"wrote {write_bundle(args.run, args.eval, args.out)}", file=sys.stderr)
         return 0
 
     load_dotenv()

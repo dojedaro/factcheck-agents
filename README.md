@@ -11,6 +11,11 @@ measured run [it didn't yet](#results-5-questions-2026-11-12). The README says w
 
 [![CI](https://github.com/dojedaro/factcheck-agents/actions/workflows/ci.yml/badge.svg)](https://github.com/dojedaro/factcheck-agents/actions/workflows/ci.yml)
 
+**[Replay real runs in the browser →](https://dojedaro.github.io/factcheck-agents/)** Watch the
+researchers work in parallel, see what the checks rejected and where the money went, click any
+citation to see its source and quote, and read the judge's reasoning for every eval question.
+The page replays saved traces, so it makes no API calls.
+
 ```mermaid
 flowchart LR
     Q([question]) --> P[Planner]
@@ -129,6 +134,21 @@ What this suggests trying next, each measurable with the same eval:
 A 5-question eval is small, and a 2-3 split is not statistically significant. The point of the
 harness is that each of these changes can now be tested against a number instead of a hunch.
 
+## Replay viewer
+
+`site/` is a static page (plain HTML, CSS and JavaScript, no build step or dependencies) that
+replays saved runs. `factcheck site` bundles run and eval folders into the one JSON file it reads:
+
+```bash
+factcheck site --run examples/runs/2026-11-12-team-passkeys --eval evals/results/2026-11-12-quick
+python -m http.server -d site 8000      # then open http://localhost:8000
+```
+
+On every push to `main`, a workflow (`.github/workflows/pages.yml`) builds the bundle from
+`examples/runs/` and `evals/results/` and publishes the page to GitHub Pages. Reports are model
+output, so the viewer escapes all HTML before rendering its small Markdown subset and only
+links to `http(s)` URLs.
+
 ## Configuration
 
 Defaults are in `src/factcheck_agents/config.py`, and any TOML file can override them:
@@ -154,7 +174,10 @@ src/factcheck_agents/
   schemas.py         typed contracts between agents
   budget.py  pricing.py  tracing.py
   evaluation.py      team vs. baseline, swapped-position judge
-tests/               38 tests; the real client is tested against a stubbed SDK
+  site_data.py       bundles saved runs for the replay viewer
+site/                the static replay viewer (GitHub Pages)
+examples/runs/       two real runs, kept for the viewer
+tests/               43 tests; the real client is tested against a stubbed SDK
 ```
 
 ## Limitations
