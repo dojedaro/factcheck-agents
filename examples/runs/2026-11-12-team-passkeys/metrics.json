@@ -1,0 +1,15 @@
+{
+  "sub_questions": 2,
+  "research_rounds": 1,
+  "researcher_failures": 0,
+  "findings_submitted": 12,
+  "findings_ungrounded": 0,
+  "findings_supported": 7,
+  "findings_partial": 5,
+  "findings_unsupported": 0,
+  "citations_used": 12,
+  "citations_invalid": 0,
+  "cost_usd": 0.968404,
+  "wall_seconds": 105.61,
+  "stopped_by_budget": false
+}

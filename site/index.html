@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>factcheck-agents · run replay</title>
+  <meta name="description" content="Replay real runs of a multi-agent research team on the Claude API: planner, parallel researchers, critic and writer, with every citation checked in code.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <div>
+        <h1>factcheck-agents <span class="muted">· run replay</span></h1>
+        <p class="lede">
+          Real runs of a multi-agent research team built on the raw Claude API: a planner splits the
+          question, researchers search the web in parallel, a critic checks each claim against its quoted
+          source, and a writer turns what survives into a cited report. Everything here is replayed from saved
+          traces, so this page makes no API calls.
+        </p>
+      </div>
+      <a class="gh" href="https://github.com/dojedaro/factcheck-agents">View the code on GitHub →</a>
+    </div>
+    <nav class="wrap tabs" role="tablist">
+      <a href="#" data-tab="replay" role="tab">Replay a run</a>
+      <a href="#eval" data-tab="eval" role="tab">Team vs. single agent</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section id="tab-replay" hidden>
+      <div class="picker">
+        <label for="run-select">Run</label>
+        <select id="run-select"></select>
+        <span id="run-mode" class="badge"></span>
+      </div>
+      <p id="run-question" class="question"></p>
+
+      <div id="stats" class="stats"></div>
+
+      <article class="card">
+        <div class="card-head">
+          <h2>Timeline</h2>
+          <div class="controls">
+            <button id="play" type="button">▶ Play</button>
+            <button id="restart" type="button" title="Back to the start">↺</button>
+            <input id="scrub" type="range" min="0" max="1000" value="1000" aria-label="Replay position">
+            <span id="clock" class="mono"></span>
+          </div>
+        </div>
+        <p id="narration" class="narration"></p>
+        <div id="timeline" class="timeline"></div>
+        <p class="hint">Bars are real wall-clock time from the trace. Researchers overlap because they run concurrently
+          with <code>asyncio.TaskGroup</code>, so a research round lasts as long as its slowest researcher.</p>
+      </article>
+
+      <div class="grid2">
+        <article class="card">
+          <h2>What the checks did</h2>
+          <div id="funnel"></div>
+        </article>
+        <article class="card">
+          <h2>Where the money went</h2>
+          <div id="costs"></div>
+        </article>
+      </div>
+
+      <article class="card report-card">
+        <div class="card-head">
+          <h2>Final report</h2>
+          <span class="hint">Click a citation like <span class="cite demo">F3</span> to see its source and quote.</span>
+        </div>
+        <div id="report" class="report"></div>
+      </article>
+    </section>
+
+    <section id="tab-eval" hidden>
+      <div id="eval"></div>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    Built from <code>factcheck site</code> output. Source data:
+    <a href="https://github.com/dojedaro/factcheck-agents/tree/main/examples/runs">examples/runs</a> and
+    <a href="https://github.com/dojedaro/factcheck-agents/tree/main/evals/results">evals/results</a>.
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
