@@ -50,6 +50,7 @@ class QuestionResult:
     judgments: tuple[str, str]
     team: RunMetrics
     baseline: RunMetrics
+    judge_cost_usd: float = 0.0  # both judge calls; not part of either side's cost
 
 
 def verdict_from_swapped(first: Judgment, second: Judgment) -> Outcome:
@@ -61,8 +62,11 @@ def verdict_from_swapped(first: Judgment, second: Judgment) -> Outcome:
     return "tie"
 
 
-async def judge(llm: LLM, settings: Settings, question: str, a: RunResult, b: RunResult) -> Judgment:
-    ctx = AgentContext(llm, settings, Budget(settings.budget_usd), Tracer())
+async def judge(
+    llm: LLM, settings: Settings, question: str, a: RunResult, b: RunResult, budget: Budget
+) -> Judgment:
+    """Compare two reports. Spend is charged to ``budget`` so the eval can report what judging cost."""
+    ctx = AgentContext(llm, settings, budget, Tracer())
     prompt = "\n\n".join(
         [
             tag("question", question),
@@ -82,8 +86,9 @@ async def compare(llm: LLM, settings: Settings, question: str, out_dir: Path, sl
     team_result = await team.run(question, team_tracer)
     base_result = await team.run_baseline(question, base_tracer)
 
-    first = await judge(llm, settings, question, team_result, base_result)
-    second = await judge(llm, settings, question, base_result, team_result)
+    judge_budget = Budget(settings.budget_usd)
+    first = await judge(llm, settings, question, team_result, base_result, judge_budget)
+    second = await judge(llm, settings, question, base_result, team_result, judge_budget)
 
     _save_run(out_dir, f"{slug}-team", team_result, team_tracer)
     _save_run(out_dir, f"{slug}-baseline", base_result, base_tracer)
@@ -94,6 +99,7 @@ async def compare(llm: LLM, settings: Settings, question: str, out_dir: Path, sl
         (first.reasoning, second.reasoning),
         team_result.metrics,
         base_result.metrics,
+        judge_budget.spent_usd,
     )
 
 
@@ -167,5 +173,8 @@ def summarize(results: list[QuestionResult]) -> str:
         "| Metric | Team | Baseline |",
         "|---|---|---|",
         *(f"| {a} | {b} | {c} |" for a, b, c in rows),
+        "",
+        f"Judging cost ${sum(r.judge_cost_usd for r in results):.3f} in total (two calls per question), "
+        "not included in either side's cost.",
     ]
     return "\n".join(lines) + "\n"

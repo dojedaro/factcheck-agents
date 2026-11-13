@@ -47,3 +47,14 @@ def test_dotenv_loads_keys_without_overriding_real_env(tmp_path, monkeypatch):
 
     assert os.environ["DOSSIER_A"] == "from file"
     assert os.environ["DOSSIER_B"] == "real"
+
+
+async def test_judge_cost_is_recorded_and_kept_separate(tmp_path):
+    import json
+
+    summary = await run_eval(FakeLLM(), Settings(), ["Q one?"], tmp_path)
+    (row,) = [
+        json.loads(line) for line in (tmp_path / "results.jsonl").read_text(encoding="utf-8").splitlines()
+    ]
+    assert row["judge_cost_usd"] > 0
+    assert "Judging cost $" in summary
