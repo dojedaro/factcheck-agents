@@ -163,6 +163,12 @@ effort = "medium"
 Every role (`planner`, `researcher`, `critic`, `writer`, `baseline`, `judge`) has its own model,
 effort level and token limit. Run the eval before and after a change to see what it costs in quality.
 
+## Stack
+
+Python 3.11+, the Anthropic SDK (Claude Opus 5.5 by default, server-side web search, structured
+outputs, prompt caching), Pydantic, `asyncio`; pytest, Ruff and strict mypy in CI; a static
+replay viewer (plain JavaScript) on GitHub Pages. No agent framework.
+
 ## Layout
 
 ```
