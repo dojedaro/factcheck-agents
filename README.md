@@ -183,7 +183,7 @@ src/factcheck_agents/
   site_data.py       bundles saved runs for the replay viewer
 site/                the static replay viewer (GitHub Pages)
 examples/runs/       two real runs, kept for the viewer
-tests/               43 tests; the real client is tested against a stubbed SDK
+tests/               44 tests; the real client is tested against a stubbed SDK
 ```
 
 ## Limitations
