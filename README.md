@@ -94,6 +94,15 @@ of evidence:
   bias, the most common failure of LLM judges. The fake judge in the test suite always prefers
   position A, and a test checks that the swap turns every one of its verdicts into a tie.
 
+### What I would take from this
+
+Do not buy a multi-agent design on the diagram. Run it against a single agent with the same model,
+tools and search allowance on your own questions first. Here the team cost 43% more per question
+($0.90 against $0.63), took 18% longer, and did not win. Its real advantage was faithfulness: claims
+tied to quotes, partial support flagged. That is worth paying for when a wrong claim is expensive
+(legal, medical, financial research) and not when broad coverage matters more. Five questions is a
+first reading, not a verdict; the caveats are at the end of this section.
+
 ### Results (5 questions, 2026-11-12)
 
 Run on `configs/quick.toml` to fit a small budget: the team got 2 sub-questions and **no
